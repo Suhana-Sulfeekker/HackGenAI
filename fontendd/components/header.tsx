@@ -56,7 +56,7 @@ export function Header({
             </div>
             <div>
               <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-[#00D4FF] to-[#8B5CF6] bg-clip-text text-transparent">
-                ViraLab
+                Viral IQ
               </h1>
               <p className="text-xs text-gray-400 -mt-1 hidden sm:block">
                 AI Marketing Research

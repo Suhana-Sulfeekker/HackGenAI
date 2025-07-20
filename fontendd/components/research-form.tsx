@@ -1,5 +1,4 @@
 "use client";
-
 import type React from "react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -15,19 +14,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { X, Calendar } from "lucide-react";
+import { X } from "lucide-react";
 import Image from "next/image";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
-import { format } from "date-fns";
 import { LoadingScreen } from "./loading-screen";
-import BackgroundIMage from "../public/assets/aiImage.jpg";
+import { ResultsPage } from "./results-page";
+import axios from "axios";
+import BGimage from "../public/assets/aiImage.jpg";
 
-type Category = "film" | "brand" | "event";
+type Category = "brand" | "event";
+type ViewState = "form" | "loading" | "results";
 
 const contentTypes: Record<Category, { value: string; label: string }[]> = {
   brand: [
@@ -36,13 +31,6 @@ const contentTypes: Record<Category, { value: string; label: string }[]> = {
     { value: "service-promotion", label: "Service Promotion" },
     { value: "social-media-campaign", label: "Social Media Campaign" },
     { value: "content-marketing", label: "Content Marketing" },
-  ],
-  film: [
-    { value: "movie-promotion", label: "Movie Promotion" },
-    { value: "trailer-release", label: "Trailer Release" },
-    { value: "fan-engagement", label: "Fan Engagement" },
-    { value: "premiere-campaign", label: "Premiere Campaign" },
-    { value: "merchandising", label: "Merchandising" },
   ],
   event: [
     { value: "event-marketing", label: "Event Marketing" },
@@ -55,11 +43,11 @@ const contentTypes: Record<Category, { value: string; label: string }[]> = {
 
 export function ResearchForm() {
   const [category, setCategory] = useState<Category>("brand");
-  const [showLoading, setShowLoading] = useState(false);
+  const [currentView, setCurrentView] = useState<ViewState>("form");
+  const [apiResults, setApiResults] = useState<any>(null);
   const [formData, setFormData] = useState({
     brandName: "",
     productName: "",
-    // referenceUrl: "",
     contentType: "",
     location: "",
     keywords: [] as string[],
@@ -68,7 +56,6 @@ export function ResearchForm() {
     eventName: "",
   });
   const [keywordInput, setKeywordInput] = useState("");
-  const [eventDate, setEventDate] = useState<Date | undefined>(undefined);
 
   const handleAddKeyword = () => {
     if (
@@ -90,52 +77,99 @@ export function ResearchForm() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Show loading screen instead of navigating directly
-    setShowLoading(true);
+    const dataToSend = {
+      brandName: formData.brandName,
+      productName: formData.productName,
+      contentType: formData.contentType,
+      location: formData.location,
+      keywords: formData.keywords,
+      description: formData.description,
+      category,
+      ...(category === "event"
+        ? {
+            organizerName: formData.organizerName,
+            eventName: formData.eventName,
+          }
+        : {}),
+    };
+    setCurrentView("loading");
+    try {
+      const response = await axios.post(
+        "https://fosslab123.app.n8n.cloud/webhook-test/5ecce52b-de2c-4f82-96f6-1ee3652cb252",
+        dataToSend
+      );
+      console.log("API Response:", response.data);
+      setApiResults(response.data);
+    } catch (error) {
+      console.error("API Error:", error);
+      alert("Failed to generate marketing strategy. Please try again.");
+      setCurrentView("form");
+    }
   };
 
-  if (showLoading) {
-    const dataToSend =
-      category === "event"
-        ? {
-            organizerName: formData.brandName,
-            eventName: formData.productName,
-            contentType: formData.contentType,
-            location: formData.location,
-            keywords: formData.keywords,
-            description: formData.description,
-            category,
-          }
-        : { ...formData, category };
+  const handleLoadingComplete = () => {
+    setCurrentView("results");
+  };
 
-    return <LoadingScreen researchData={dataToSend} />;
+  const handleNewResearch = () => {
+    setCurrentView("form");
+    setApiResults(null);
+    setFormData({
+      brandName: "",
+      productName: "",
+      contentType: "",
+      location: "",
+      keywords: [],
+      description: "",
+      organizerName: "", // Clear organizerName
+      eventName: "", // Clear eventName
+    });
+  };
+
+  const dataToSend = {
+    brandName: formData.brandName,
+    productName: formData.productName,
+    contentType: formData.contentType,
+    location: formData.location,
+    keywords: formData.keywords,
+    description: formData.description,
+    category,
+    ...(category === "event"
+      ? { organizerName: formData.organizerName, eventName: formData.eventName }
+      : {}),
+  };
+
+  if (currentView === "loading") {
+    return (
+      <LoadingScreen
+        researchData={dataToSend}
+        onComplete={handleLoadingComplete}
+      />
+    );
+  }
+
+  if (currentView === "results") {
+    return (
+      <ResultsPage
+        researchData={dataToSend}
+        apiResults={apiResults}
+        onNewResearch={handleNewResearch}
+      />
+    );
   }
 
   const labels = {
-    brandName:
-      category === "film"
-        ? "Production Company *"
-        : category === "event"
-        ? "Organizer / Brand *"
-        : "Brand Name *",
-    productName:
-      category === "film"
-        ? "Film Title *"
-        : category === "event"
-        ? "Event Name *"
-        : "Product Name *",
+    brandName: category === "event" ? "Organizer / Brand *" : "Brand Name *",
+    productName: category === "event" ? "Event Name *" : "Product Name *",
   };
 
-  const commonValid =
+  const isFormValid =
     formData.brandName &&
     formData.productName &&
     formData.contentType &&
     formData.location;
-
-  const isFormValid = commonValid;
 
   return (
     <section className="min-h-screen flex items-center justify-center p-6 lg:p-12">
@@ -149,7 +183,6 @@ export function ResearchForm() {
               Choose a category and we'll tailor the rest of the form for you.
             </p>
           </div>
-
           <Card className="bg-[#1A2040]/60 backdrop-blur-xl border-white/10 p-8">
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
@@ -158,7 +191,13 @@ export function ResearchForm() {
                   value={category}
                   onValueChange={(val) => {
                     setCategory(val as Category);
-                    setFormData((prev) => ({ ...prev, contentType: "" }));
+                    setFormData((prev) => ({
+                      ...prev,
+                      contentType: "",
+                      ...(val === "brand"
+                        ? { organizerName: "", eventName: "" }
+                        : { brandName: "", productName: "" }),
+                    }));
                   }}
                 >
                   <SelectTrigger className="bg-[#151B3B] border-white/20 text-white">
@@ -166,12 +205,10 @@ export function ResearchForm() {
                   </SelectTrigger>
                   <SelectContent className="bg-[#1A2040] border-white/10 text-white">
                     <SelectItem value="brand">Brand / Product</SelectItem>
-                    {/* <SelectItem value="film">Film / Series</SelectItem> */}
                     <SelectItem value="event">Event / Campaign</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="brandName" className="text-white">
@@ -214,7 +251,6 @@ export function ResearchForm() {
                   />
                 </div>
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="contentType" className="text-white">
@@ -257,7 +293,6 @@ export function ResearchForm() {
                   />
                 </div>
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="keywords" className="text-white">
                   Keywords for Research
@@ -304,11 +339,10 @@ export function ResearchForm() {
                   </div>
                 )}
               </div>
-
               <div className="space-y-2">
                 <Label htmlFor="description" className="text-white">
-                  {category === "film"
-                    ? "Synopsis / Campaign Notes"
+                  {category === "event"
+                    ? "Product / Campaign Description"
                     : "Product / Campaign Description"}
                 </Label>
                 <Textarea
@@ -324,7 +358,6 @@ export function ResearchForm() {
                   className="bg-[#151B3B] border-white/20 text-white placeholder:text-gray-400 min-h-[100px]"
                 />
               </div>
-
               <Button
                 type="submit"
                 disabled={!isFormValid}
@@ -337,7 +370,7 @@ export function ResearchForm() {
         </div>
         <div className="hidden lg:block w-full lg:w-1/2">
           <Image
-            src={BackgroundIMage}
+            src={BGimage}
             alt="Background"
             width={600}
             height={800}

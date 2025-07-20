@@ -1,6 +1,5 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,38 +14,38 @@ import {
   Youtube,
   Download,
   Share,
-  MessageCircle,
   BarChart3,
   Zap,
   Eye,
-  Clock,
+  Instagram,
+  Play,
+  Lightbulb,
+  ExternalLink,
+  ThumbsUp,
+  Calendar,
 } from "lucide-react";
 
-export function ResultsPage() {
-  const searchParams = useSearchParams();
+interface ResultsPageProps {
+  researchData: any;
+  apiResults?: any;
+  onNewResearch: () => void;
+}
 
-  // Extract data from URL parameters
-  const researchData = {
-    category: searchParams.get("category") || "",
-    brandName: searchParams.get("brandName") || "",
-    productName: searchParams.get("productName") || "",
-    referenceUrl: searchParams.get("referenceUrl") || "",
-    contentType: searchParams.get("contentType") || "",
-    location: searchParams.get("location") || "",
-    targetAudience: searchParams.get("targetAudience") || "",
-    keywords: searchParams.get("keywords")?.split(",").filter(Boolean) || [],
-    description: searchParams.get("description") || "",
-    releaseDate: searchParams.get("releaseDate") || "",
-    director: searchParams.get("director") || "",
-    eventDate: searchParams.get("eventDate") || "",
-    venue: searchParams.get("venue") || "",
-  };
+export function ResultsPage({
+  researchData,
+  apiResults,
+  onNewResearch,
+}: ResultsPageProps) {
+  // Extract data from API response or use fallback
+  const apiData = apiResults?.data?.results;
+  const researchInfo = apiResults?.data?.researchData;
 
+  // Fallback mock data for when API data is empty
   const mockResults = {
-    viralScore: 87,
+    viralScore: 75,
     targetAudience: {
-      primary: "Tech-savvy millennials (25-35)",
-      secondary: "Early adopters and innovators",
+      ageGroup: "25-35 years",
+      audienceCategory: "Tech-savvy millennials",
       demographics: "Urban professionals, 60% male, 40% female",
     },
     trendingHashtags: [
@@ -54,80 +53,107 @@ export function ResultsPage() {
       "#FutureIsNow",
       "#SmartTech",
       "#Innovation2024",
-      "#TechLife",
-      "#DigitalTransformation",
-      "#NextGen",
-      "#TechTrends",
     ],
     contentStrategy: [
       {
-        platform: "Reddit",
-        icon: MessageCircle,
-        color: "from-[#FF4500] to-[#FF6B35]",
-        posts: 10,
-        strategy:
-          "Community engagement through valuable discussions and authentic product insights",
-        bestTimes: ["10:00 AM", "2:00 PM", "8:00 PM"],
-        contentTypes: [
-          "AMA sessions",
-          "Technical discussions",
-          "Community posts",
+        platform: "Google Search Engine",
+        linkCount: 15,
+        topResults: [
+          {
+            title: "Sample Search Result",
+            url: "https://example.com",
+            description: "Sample description for search result",
+          },
         ],
-      },
-      {
-        platform: "TikTok",
-        icon: Video,
-        color: "from-[#000000] to-[#FF0050]",
-        posts: 8,
-        strategy:
-          "Short-form viral videos showcasing product benefits and user testimonials",
-        bestTimes: ["6:00 AM", "10:00 AM", "7:00 PM"],
-        contentTypes: [
-          "Product demos",
-          "Trending challenges",
-          "User-generated content",
-        ],
-      },
-      {
-        platform: "Google Ads",
-        icon: Search,
-        color: "from-[#4285F4] to-[#34A853]",
-        posts: 20,
-        strategy:
-          "Targeted search and display campaigns focusing on high-intent keywords",
-        bestTimes: ["9:00 AM", "1:00 PM", "6:00 PM"],
-        contentTypes: ["Search ads", "Display campaigns", "YouTube ads"],
+        trendAnalysis: "High search volume for related keywords",
       },
       {
         platform: "YouTube",
-        icon: Youtube,
-        color: "from-[#FF0000] to-[#CC0000]",
-        posts: 4,
-        strategy: "In-depth product reviews and educational content",
-        bestTimes: ["2:00 PM", "8:00 PM"],
-        contentTypes: ["Product reviews", "Tutorials", "Webinars"],
+        linkCount: 8,
+        topVideos: [
+          {
+            title: "Sample Video Title",
+            thumbnailUrl: "",
+            channelUrl: "https://youtube.com/channel/sample",
+            publishedAt: "2024-01-15",
+            viewCount: 50000,
+            likeCount: 1200,
+            description: "Sample video description",
+          },
+        ],
+        trendAnalysis: "Growing interest in video content",
       },
     ],
-    keyInsights: [
-      "Video content performs 340% better than static images for your target audience",
-      "User-generated content increases engagement by 67% in the tech sector",
-      "Educational content drives 45% more qualified leads than promotional content",
-      "Cross-platform campaigns show 23% higher conversion rates",
+    keyInsightsAcrossPlatforms: [
+      "Video content shows 340% better engagement",
+      "Search volume increasing by 25% monthly",
+      "User-generated content drives 67% more engagement",
     ],
-    competitorAnalysis: [
-      {
-        competitor: "TechCorp",
-        strength: "Strong video content",
-        weakness: "Limited user engagement",
-        opportunity: "Better storytelling approach",
-      },
-      {
-        competitor: "InnovateLab",
-        strength: "High engagement rates",
-        weakness: "Inconsistent posting",
-        opportunity: "More consistent content calendar",
-      },
-    ],
+    aiGeneratedIdeas: {
+      youtubeReelsIdeas: [
+        {
+          title: "Quick Product Demo",
+          idea: "Show your product in action within 30 seconds",
+        },
+      ],
+      youtubeVideoIdeas: [
+        {
+          title: "Complete Product Tutorial",
+          description: "In-depth guide showing all features and benefits",
+        },
+      ],
+      adsIdeas: [
+        {
+          title: "Problem-Solution Ad",
+          description: "Highlight the problem your product solves",
+        },
+      ],
+      instagramReelsIdeas: [
+        {
+          reelIdea: "Behind-the-scenes content",
+          caption: "See how we create amazing products! #BehindTheScenes",
+        },
+      ],
+    },
+  };
+
+  // Use API data if available, otherwise use mock data
+  const results =
+    apiData && Object.keys(apiData).length > 0 ? apiData : mockResults;
+
+  // Helper function to get platform icon
+  const getPlatformIcon = (platform: string) => {
+    switch (platform.toLowerCase()) {
+      case "google search engine":
+        return Search;
+      case "youtube":
+        return Youtube;
+      case "instagram":
+        return Instagram;
+      default:
+        return MessageSquare;
+    }
+  };
+
+  // Helper function to get platform color
+  const getPlatformColor = (platform: string) => {
+    switch (platform.toLowerCase()) {
+      case "google search engine":
+        return "from-[#4285F4] to-[#34A853]";
+      case "youtube":
+        return "from-[#FF0000] to-[#CC0000]";
+      case "instagram":
+        return "from-[#E4405F] to-[#833AB4]";
+      default:
+        return "from-[#8B5CF6] to-[#EC4899]";
+    }
+  };
+
+  // Format numbers for display
+  const formatNumber = (num: number) => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toString();
   };
 
   return (
@@ -144,7 +170,8 @@ export function ResultsPage() {
                 Marketing Strategy Generated
               </h1>
               <p className="text-gray-400">
-                For {researchData.brandName} {researchData.productName}
+                For {researchInfo?.brandOrOrganizer || researchData.brandName}{" "}
+                {researchInfo?.productOrEvent || researchData.productName}
               </p>
             </div>
           </div>
@@ -159,6 +186,13 @@ export function ResultsPage() {
             >
               <Share className="w-4 h-4 mr-2" />
               Share Results
+            </Button>
+            <Button
+              onClick={onNewResearch}
+              variant="outline"
+              className="border-white/20 text-white hover:bg-white/10 bg-transparent"
+            >
+              New Research
             </Button>
           </div>
         </div>
@@ -176,17 +210,22 @@ export function ResultsPage() {
                   </h3>
                 </div>
                 <div className="text-4xl font-bold text-white mb-1">
-                  {mockResults.viralScore}%
+                  {results.viralScore || 0}%
                 </div>
                 <p className="text-gray-400 text-sm">
-                  High viral potential detected
+                  {results.viralScore > 70
+                    ? "High"
+                    : results.viralScore > 40
+                    ? "Medium"
+                    : "Low"}{" "}
+                  viral potential detected
                 </p>
               </div>
               <div className="w-20 h-20 relative">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#39FF14] to-[#00D4FF] p-1">
                   <div className="w-full h-full rounded-full bg-[#0A0E27] flex items-center justify-center">
                     <div className="text-xl font-bold text-white">
-                      {mockResults.viralScore}%
+                      {results.viralScore || 0}%
                     </div>
                   </div>
                 </div>
@@ -198,21 +237,27 @@ export function ResultsPage() {
           <Card className="bg-[#1A2040]/60 backdrop-blur-xl border-white/10 p-6">
             <div className="flex items-center space-x-2 mb-2">
               <Eye className="w-5 h-5 text-[#00D4FF]" />
-              <h3 className="text-sm font-semibold text-white">
-                Reach Potential
-              </h3>
+              <h3 className="text-sm font-semibold text-white">Total Links</h3>
             </div>
-            <div className="text-2xl font-bold text-white">2.4M+</div>
-            <p className="text-gray-400 text-xs">Estimated reach</p>
+            <div className="text-2xl font-bold text-white">
+              {results.contentStrategy?.reduce(
+                (total: number, platform: any) =>
+                  total + (platform.linkCount || 0),
+                0
+              ) || 0}
+            </div>
+            <p className="text-gray-400 text-xs">Across platforms</p>
           </Card>
 
           <Card className="bg-[#1A2040]/60 backdrop-blur-xl border-white/10 p-6">
             <div className="flex items-center space-x-2 mb-2">
-              <BarChart3 className="w-5 h-5 text-[#8B5CF6]" />
-              <h3 className="text-sm font-semibold text-white">Engagement</h3>
+              <Hash className="w-5 h-5 text-[#8B5CF6]" />
+              <h3 className="text-sm font-semibold text-white">Hashtags</h3>
             </div>
-            <div className="text-2xl font-bold text-white">12.8%</div>
-            <p className="text-gray-400 text-xs">Expected rate</p>
+            <div className="text-2xl font-bold text-white">
+              {results.trendingHashtags?.length || 0}
+            </div>
+            <p className="text-gray-400 text-xs">Trending tags</p>
           </Card>
         </div>
 
@@ -220,88 +265,273 @@ export function ResultsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Platform Strategies */}
+            {/* Platform Analysis */}
             <Card className="bg-[#1A2040]/60 backdrop-blur-xl border-white/10 p-6">
               <div className="flex items-center space-x-3 mb-4">
-                <MessageSquare className="w-6 h-6 text-[#8B5CF6]" />
+                <BarChart3 className="w-6 h-6 text-[#8B5CF6]" />
                 <h3 className="text-xl font-semibold text-white">
-                  Platform Strategies
+                  Platform Analysis
                 </h3>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {mockResults.contentStrategy.map((platform, index) => (
-                  <Card
-                    key={index}
-                    className="bg-gradient-to-br from-[#151B3B] to-[#1A2040] border-white/10 p-4"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center space-x-3">
-                        <div
-                          className={`w-8 h-8 bg-gradient-to-r ${platform.color} rounded-lg flex items-center justify-center`}
-                        >
-                          <platform.icon className="w-4 h-4 text-white" />
+              <div className="grid grid-cols-1 gap-4">
+                {results.contentStrategy?.map(
+                  (platform: any, index: number) => {
+                    const PlatformIcon = getPlatformIcon(platform.platform);
+                    return (
+                      <Card
+                        key={index}
+                        className="bg-gradient-to-br from-[#151B3B] to-[#1A2040] border-white/10 p-4"
+                      >
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center space-x-3">
+                            <div
+                              className={`w-8 h-8 bg-gradient-to-r ${getPlatformColor(
+                                platform.platform
+                              )} rounded-lg flex items-center justify-center`}
+                            >
+                              <PlatformIcon className="w-4 h-4 text-white" />
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-white text-sm">
+                                {platform.platform}
+                              </h4>
+                              <p className="text-xs text-gray-400">
+                                {platform.linkCount || 0} results found
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="font-semibold text-white text-sm">
-                            {platform.platform}
-                          </h4>
-                          <p className="text-xs text-gray-400">
-                            {platform.posts} posts/month
+
+                        {platform.trendAnalysis && (
+                          <p className="text-gray-300 text-sm mb-3">
+                            {platform.trendAnalysis}
+                          </p>
+                        )}
+
+                        {/* Platform-specific content */}
+                        {platform.platform === "YouTube" &&
+                          platform.topVideos?.length > 0 && (
+                            <div className="space-y-2">
+                              <h5 className="text-xs font-medium text-white mb-2">
+                                Top Videos
+                              </h5>
+                              {platform.topVideos
+                                .slice(0, 2)
+                                .map((video: any, videoIndex: number) => (
+                                  <div
+                                    key={videoIndex}
+                                    className="bg-[#0A0E27]/50 rounded p-2"
+                                  >
+                                    <div className="flex items-center space-x-2 mb-1">
+                                      <Play className="w-3 h-3 text-red-400" />
+                                      <p className="text-xs text-white font-medium truncate">
+                                        {video.title}
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center space-x-4 text-xs text-gray-400">
+                                      <span className="flex items-center space-x-1">
+                                        <Eye className="w-3 h-3" />
+                                        <span>
+                                          {formatNumber(video.viewCount || 0)}
+                                        </span>
+                                      </span>
+                                      <span className="flex items-center space-x-1">
+                                        <ThumbsUp className="w-3 h-3" />
+                                        <span>
+                                          {formatNumber(video.likeCount || 0)}
+                                        </span>
+                                      </span>
+                                      {video.publishedAt && (
+                                        <span className="flex items-center space-x-1">
+                                          <Calendar className="w-3 h-3" />
+                                          <span>
+                                            {new Date(
+                                              video.publishedAt
+                                            ).toLocaleDateString()}
+                                          </span>
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+                          )}
+
+                        {platform.platform === "Google Search Engine" &&
+                          platform.topResults?.length > 0 && (
+                            <div className="space-y-2">
+                              <h5 className="text-xs font-medium text-white mb-2">
+                                Top Results
+                              </h5>
+                              {platform.topResults
+                                .slice(0, 2)
+                                .map((result: any, resultIndex: number) => (
+                                  <div
+                                    key={resultIndex}
+                                    className="bg-[#0A0E27]/50 rounded p-2"
+                                  >
+                                    <div className="flex items-center space-x-2 mb-1">
+                                      <ExternalLink className="w-3 h-3 text-blue-400" />
+                                      <p className="text-xs text-white font-medium truncate">
+                                        {result.title}
+                                      </p>
+                                    </div>
+                                    <p className="text-xs text-gray-400 line-clamp-2">
+                                      {result.description}
+                                    </p>
+                                  </div>
+                                ))}
+                            </div>
+                          )}
+                      </Card>
+                    );
+                  }
+                )}
+              </div>
+            </Card>
+
+            {/* AI Generated Ideas */}
+            <Card className="bg-[#1A2040]/60 backdrop-blur-xl border-white/10 p-6">
+              <div className="flex items-center space-x-3 mb-4">
+                <Lightbulb className="w-6 h-6 text-[#FFD700]" />
+                <h3 className="text-xl font-semibold text-white">
+                  AI Generated Ideas
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* YouTube Video Ideas */}
+                {results.aiGeneratedIdeas?.youtubeVideoIdeas?.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <Youtube className="w-4 h-4 text-red-400" />
+                      <h4 className="font-semibold text-white text-sm">
+                        YouTube Videos
+                      </h4>
+                    </div>
+                    {results.aiGeneratedIdeas.youtubeVideoIdeas
+                      .slice(0, 3)
+                      .map((idea: any, index: number) => (
+                        <div
+                          key={index}
+                          className="bg-gradient-to-r from-[#151B3B] to-[#1A2040] rounded-lg p-3"
+                        >
+                          <h5 className="text-sm font-medium text-white mb-1">
+                            {idea.title}
+                          </h5>
+                          <p className="text-xs text-gray-300">
+                            {idea.description}
                           </p>
                         </div>
-                      </div>
+                      ))}
+                  </div>
+                )}
+
+                {/* YouTube Reels Ideas */}
+                {results.aiGeneratedIdeas?.youtubeReelsIdeas?.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <Video className="w-4 h-4 text-red-400" />
+                      <h4 className="font-semibold text-white text-sm">
+                        YouTube Shorts
+                      </h4>
                     </div>
-                    <p className="text-gray-300 text-sm mb-3 line-clamp-2">
-                      {platform.strategy}
-                    </p>
-                    <div className="space-y-2">
-                      <div>
-                        <div className="flex items-center space-x-1 mb-1">
-                          <Clock className="w-3 h-3 text-gray-400" />
-                          <h5 className="text-xs font-medium text-white">
-                            Best Times
+                    {results.aiGeneratedIdeas.youtubeReelsIdeas
+                      .slice(0, 3)
+                      .map((idea: any, index: number) => (
+                        <div
+                          key={index}
+                          className="bg-gradient-to-r from-[#151B3B] to-[#1A2040] rounded-lg p-3"
+                        >
+                          <h5 className="text-sm font-medium text-white mb-1">
+                            {idea.title}
                           </h5>
+                          <p className="text-xs text-gray-300">{idea.idea}</p>
                         </div>
-                        <div className="flex flex-wrap gap-1">
-                          {platform.bestTimes
-                            .slice(0, 2)
-                            .map((time, timeIndex) => (
-                              <Badge
-                                key={timeIndex}
-                                variant="outline"
-                                className="border-white/20 text-gray-300 text-xs px-2 py-0"
-                              >
-                                {time}
-                              </Badge>
-                            ))}
-                        </div>
-                      </div>
+                      ))}
+                  </div>
+                )}
+
+                {/* Instagram Reels Ideas */}
+                {results.aiGeneratedIdeas?.instagramReelsIdeas?.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <Instagram className="w-4 h-4 text-pink-400" />
+                      <h4 className="font-semibold text-white text-sm">
+                        Instagram Reels
+                      </h4>
                     </div>
-                  </Card>
-                ))}
+                    {results.aiGeneratedIdeas.instagramReelsIdeas
+                      .slice(0, 3)
+                      .map((idea: any, index: number) => (
+                        <div
+                          key={index}
+                          className="bg-gradient-to-r from-[#151B3B] to-[#1A2040] rounded-lg p-3"
+                        >
+                          <p className="text-sm text-white mb-1">
+                            {idea.reelIdea}
+                          </p>
+                          <p className="text-xs text-gray-300">
+                            {idea.caption}
+                          </p>
+                        </div>
+                      ))}
+                  </div>
+                )}
+
+                {/* Ads Ideas */}
+                {results.aiGeneratedIdeas?.adsIdeas?.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-2">
+                      <Target className="w-4 h-4 text-green-400" />
+                      <h4 className="font-semibold text-white text-sm">
+                        Ad Campaigns
+                      </h4>
+                    </div>
+                    {results.aiGeneratedIdeas.adsIdeas
+                      .slice(0, 3)
+                      .map((idea: any, index: number) => (
+                        <div
+                          key={index}
+                          className="bg-gradient-to-r from-[#151B3B] to-[#1A2040] rounded-lg p-3"
+                        >
+                          <h5 className="text-sm font-medium text-white mb-1">
+                            {idea.title}
+                          </h5>
+                          <p className="text-xs text-gray-300">
+                            {idea.description}
+                          </p>
+                        </div>
+                      ))}
+                  </div>
+                )}
               </div>
             </Card>
 
             {/* Key Insights */}
-            <Card className="bg-[#1A2040]/60 backdrop-blur-xl border-white/10 p-6">
-              <div className="flex items-center space-x-3 mb-4">
-                <TrendingUp className="w-6 h-6 text-[#FFD700]" />
-                <h3 className="text-xl font-semibold text-white">
-                  Key Insights
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {mockResults.keyInsights.map((insight, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start space-x-3 p-3 bg-gradient-to-r from-[#151B3B] to-[#1A2040] rounded-lg"
-                  >
-                    <div className="w-2 h-2 bg-[#39FF14] rounded-full mt-2 flex-shrink-0" />
-                    <p className="text-gray-300 text-sm">{insight}</p>
-                  </div>
-                ))}
-              </div>
-            </Card>
+            {results.keyInsightsAcrossPlatforms?.length > 0 && (
+              <Card className="bg-[#1A2040]/60 backdrop-blur-xl border-white/10 p-6">
+                <div className="flex items-center space-x-3 mb-4">
+                  <TrendingUp className="w-6 h-6 text-[#FFD700]" />
+                  <h3 className="text-xl font-semibold text-white">
+                    Key Insights
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 gap-3">
+                  {results.keyInsightsAcrossPlatforms.map(
+                    (insight: string, index: number) => (
+                      <div
+                        key={index}
+                        className="flex items-start space-x-3 p-3 bg-gradient-to-r from-[#151B3B] to-[#1A2040] rounded-lg"
+                      >
+                        <div className="w-2 h-2 bg-[#39FF14] rounded-full mt-2 flex-shrink-0" />
+                        <p className="text-gray-300 text-sm">{insight}</p>
+                      </div>
+                    )
+                  )}
+                </div>
+              </Card>
+            )}
           </div>
 
           {/* Right Column */}
@@ -315,98 +545,113 @@ export function ResultsPage() {
                 </h3>
               </div>
               <div className="space-y-4">
-                <div>
-                  <h4 className="font-semibold text-white mb-1 text-sm">
-                    Primary
-                  </h4>
-                  <p className="text-gray-300 text-sm">
-                    {mockResults.targetAudience.primary}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-white mb-1 text-sm">
-                    Secondary
-                  </h4>
-                  <p className="text-gray-300 text-sm">
-                    {mockResults.targetAudience.secondary}
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-white mb-1 text-sm">
-                    Demographics
-                  </h4>
-                  <p className="text-gray-300 text-sm">
-                    {mockResults.targetAudience.demographics}
-                  </p>
-                </div>
+                {results.targetAudience?.ageGroup && (
+                  <div>
+                    <h4 className="font-semibold text-white mb-1 text-sm">
+                      Age Group
+                    </h4>
+                    <p className="text-gray-300 text-sm">
+                      {results.targetAudience.ageGroup}
+                    </p>
+                  </div>
+                )}
+                {results.targetAudience?.audienceCategory && (
+                  <div>
+                    <h4 className="font-semibold text-white mb-1 text-sm">
+                      Category
+                    </h4>
+                    <p className="text-gray-300 text-sm">
+                      {results.targetAudience.audienceCategory}
+                    </p>
+                  </div>
+                )}
+                {results.targetAudience?.demographics && (
+                  <div>
+                    <h4 className="font-semibold text-white mb-1 text-sm">
+                      Demographics
+                    </h4>
+                    <p className="text-gray-300 text-sm">
+                      {results.targetAudience.demographics}
+                    </p>
+                  </div>
+                )}
               </div>
             </Card>
 
             {/* Trending Hashtags */}
-            <Card className="bg-[#1A2040]/60 backdrop-blur-xl border-white/10 p-6">
-              <div className="flex items-center space-x-3 mb-4">
-                <Hash className="w-6 h-6 text-[#39FF14]" />
-                <h3 className="text-lg font-semibold text-white">
-                  Trending Hashtags
-                </h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {mockResults.trendingHashtags.map((hashtag, index) => (
-                  <Badge
-                    key={index}
-                    className="bg-gradient-to-r from-[#00D4FF]/20 to-[#8B5CF6]/20 text-[#00D4FF] border-[#00D4FF]/30 hover:bg-[#00D4FF]/30 cursor-pointer text-xs"
-                  >
-                    {hashtag}
-                  </Badge>
-                ))}
-              </div>
-            </Card>
+            {results.trendingHashtags?.length > 0 && (
+              <Card className="bg-[#1A2040]/60 backdrop-blur-xl border-white/10 p-6">
+                <div className="flex items-center space-x-3 mb-4">
+                  <Hash className="w-6 h-6 text-[#39FF14]" />
+                  <h3 className="text-lg font-semibold text-white">
+                    Trending Hashtags
+                  </h3>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {results.trendingHashtags.map(
+                    (hashtag: string, index: number) => (
+                      <Badge
+                        key={index}
+                        className="bg-gradient-to-r from-[#00D4FF]/20 to-[#8B5CF6]/20 text-[#00D4FF] border-[#00D4FF]/30 hover:bg-[#00D4FF]/30 cursor-pointer text-xs"
+                      >
+                        {hashtag.startsWith("#") ? hashtag : `#${hashtag}`}
+                      </Badge>
+                    )
+                  )}
+                </div>
+              </Card>
+            )}
 
-            {/* Competitor Analysis */}
+            {/* Research Summary */}
             <Card className="bg-[#1A2040]/60 backdrop-blur-xl border-white/10 p-6">
               <div className="flex items-center space-x-3 mb-4">
-                <Target className="w-6 h-6 text-[#FF6B6B]" />
+                <MessageSquare className="w-6 h-6 text-[#8B5CF6]" />
                 <h3 className="text-lg font-semibold text-white">
-                  Competitors
+                  Research Summary
                 </h3>
               </div>
-              <div className="space-y-3">
-                {mockResults.competitorAnalysis.map((competitor, index) => (
-                  <div
-                    key={index}
-                    className="p-3 bg-gradient-to-r from-[#151B3B] to-[#1A2040] rounded-lg"
-                  >
-                    <h4 className="font-semibold text-white mb-2 text-sm">
-                      {competitor.competitor}
-                    </h4>
-                    <div className="space-y-1 text-xs">
-                      <div>
-                        <span className="text-[#39FF14] font-medium">
-                          Strength:{" "}
-                        </span>
-                        <span className="text-gray-300">
-                          {competitor.strength}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-[#FF6B6B] font-medium">
-                          Weakness:{" "}
-                        </span>
-                        <span className="text-gray-300">
-                          {competitor.weakness}
-                        </span>
-                      </div>
-                      <div>
-                        <span className="text-[#FFD700] font-medium">
-                          Opportunity:{" "}
-                        </span>
-                        <span className="text-gray-300">
-                          {competitor.opportunity}
-                        </span>
-                      </div>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Category:</span>
+                  <span className="text-white">
+                    {researchInfo?.category || researchData.category || "N/A"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Location:</span>
+                  <span className="text-white">
+                    {researchInfo?.location || researchData.location || "N/A"}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Content Type:</span>
+                  <span className="text-white">
+                    {researchInfo?.contentType ||
+                      researchData.contentType ||
+                      "N/A"}
+                  </span>
+                </div>
+                {(researchInfo?.keywords?.length > 0 ||
+                  researchData.keywords?.length > 0) && (
+                  <div>
+                    <span className="text-gray-400">Keywords:</span>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {(
+                        researchInfo?.keywords ||
+                        researchData.keywords ||
+                        []
+                      ).map((keyword: string, index: number) => (
+                        <Badge
+                          key={index}
+                          variant="outline"
+                          className="border-white/20 text-gray-300 text-xs"
+                        >
+                          {keyword}
+                        </Badge>
+                      ))}
                     </div>
                   </div>
-                ))}
+                )}
               </div>
             </Card>
           </div>

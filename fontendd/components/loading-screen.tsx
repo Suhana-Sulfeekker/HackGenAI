@@ -64,10 +64,8 @@ export function LoadingScreen({ researchData }: LoadingScreenProps) {
           params.set("category", researchData.category);
           params.set("brandName", researchData.brandName);
           params.set("productName", researchData.productName);
-          params.set("referenceUrl", researchData.referenceUrl);
           params.set("contentType", researchData.contentType);
           params.set("location", researchData.location);
-          params.set("targetAudience", researchData.targetAudience);
           params.set("keywords", researchData.keywords.join(","));
           params.set("description", researchData.description);
 
@@ -76,8 +74,12 @@ export function LoadingScreen({ researchData }: LoadingScreenProps) {
             params.set("releaseDate", researchData.releaseDate);
             params.set("director", researchData.director);
           } else if (researchData.category === "event") {
-            params.set("eventDate", researchData.eventDate);
-            params.set("venue", researchData.venue);
+            if (researchData.eventDate) {
+              params.set("eventDate", researchData.eventDate.toISOString());
+            }
+            if (researchData.venue) {
+              params.set("venue", researchData.venue);
+            }
           }
 
           // Navigate to results page with parameters

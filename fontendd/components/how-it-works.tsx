@@ -48,7 +48,7 @@ export function HowItWorks({ onStartResearch }: HowItWorksProps) {
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
             How{" "}
             <span className="bg-gradient-to-r from-[#00D4FF] to-[#8B5CF6] bg-clip-text text-transparent">
-              ViraLab
+              Viral IQ
             </span>{" "}
             Works
           </h1>

@@ -53,7 +53,7 @@ export function AboutUs({ onStartResearch }: AboutUsProps) {
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
             About{" "}
             <span className="bg-gradient-to-r from-[#00D4FF] to-[#8B5CF6] bg-clip-text text-transparent">
-              ViraLab
+              ViralIQ
             </span>
           </h1>
           <p className="text-base sm:text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
@@ -114,7 +114,7 @@ export function AboutUs({ onStartResearch }: AboutUsProps) {
             </h2>
             <div className="space-y-4 sm:space-y-6 text-gray-300 text-sm sm:text-base leading-relaxed">
               <p>
-                ViraLab was founded by a team of marketing professionals and AI
+                ViralIQ was founded by a team of marketing professionals and AI
                 researchers who experienced firsthand the challenges of creating
                 viral content. After years of trial and error, late nights
                 analyzing competitor strategies, and countless failed campaigns,
@@ -128,7 +128,7 @@ export function AboutUs({ onStartResearch }: AboutUsProps) {
                 patterns and predict viral potential with remarkable accuracy.
               </p>
               <p>
-                Today, ViraLab helps thousands of businesses worldwide transform
+                Today, ViraIQ helps thousands of businesses worldwide transform
                 their products into viral sensations. From startups launching
                 their first product to established brands seeking their next
                 breakthrough, we're proud to be the catalyst for viral success
