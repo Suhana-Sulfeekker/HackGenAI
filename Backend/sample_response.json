@@ -1,0 +1,196 @@
+[
+  {
+    "status": "success",
+    "message": "Marketing strategy generated successfully",
+    "data": {
+      "researchData": {
+        "category": "brand",
+        "brandOrOrganizer": "Burger Lounge",
+        "productOrEvent": "Midweek Smasher Deal",
+        "contentType": "discount",
+        "description": "Smash your midweek cravings with Burger Lounge’s Smasher Deal! Get a chicken burger + fries for ₹79. Only in Kochi outlets!",
+        "keywords": [
+          "burger",
+          "deal",
+          "Kochi",
+          "midweek offer",
+          "Burger Lounge"
+        ],
+        "location": "Kochi"
+      },
+      "results": {
+        "viralScore": 75,
+        "targetAudience": {
+          "ageGroup": "18-35",
+          "audienceCategory": "Young Adults, Students, Working Professionals",
+          "demographics": "Tech-savvy individuals in Kochi, interested in affordable food deals, social media users, likely to order food online."
+        },
+        "trendingHashtags": [
+          "#BurgerLoungeKochi",
+          "#KochiFoodDeals",
+          "#MidweekTreat",
+          "#SmasherDeal",
+          "#KochiBurgers",
+          "#AffordableEatsKochi",
+          "#FoodieKochi",
+          "#KochiFood",
+          "#BurgerDeals",
+          "#ChickenBurger",
+          "#KochiOffers",
+          "#LunchDeals"
+        ],
+        "contentStrategy": [
+          {
+            "platform": "Google Search Engine",
+            "linkCount": 10,
+            "topResults": [
+              {
+                "title": "Got rotten chicken wings from KFC kalmassery (Wednesday offer ...",
+                "url": "https://www.reddit.com/r/Kochi/comments/1iuuskh/got_rotten_chicken_wings_from_kfc_kalmassery/",
+                "description": "Feb 21, 2025 ... No we have had very bad food from KFC Kalamassery as well several times. Funnily enough I was just thinking about this and about complaining to ..."
+              },
+              {
+                "title": "Popeyes India | Order Chicken Sandwich & Burgers Online",
+                "url": "https://m.popeyes.in/",
+                "description": "... Meal. 469. Classic Chicken Sandwich Burger. 209. Chicken Sandwich Meal -Medium. 347. My Account. Menu. Offers. Cart. Internet connection Lost."
+              },
+              {
+                "title": "Who sells the best Fried Chicken in Kochi? : r/Kochi",
+                "url": "https://www.reddit.com/r/Kochi/comments/182os18/who_sells_the_best_fried_chicken_in_kochi/",
+                "description": "Nov 24, 2023 ... If your post is about travel, food, or buying & selling, please post it in the above threads instead. This will help keep the subreddit ..."
+              }
+            ],
+            "trendAnalysis": "People in Kochi are actively searching for burger and chicken deals, but negative experiences with other fast-food chains indicate the importance of emphasizing freshness and quality in marketing. Popeyes is a key competitor to consider."
+          },
+          {
+            "platform": "YouTube",
+            "linkCount": 15,
+            "topVideos": [
+              {
+                "title": "Hungry Mrinal Review🤫സാധാരണക്കാരന്റെ കട🤭 #mrinalsblog #biriyani #chai #keralafood #foodblogger",
+                "channel": "FeastFlicks Kerala",
+                "views": 998274,
+                "likes": 21043,
+                "publishedAt": "2025-07-11T14:09:12Z",
+                "description": "",
+                "thumbnailUrl": "https://i.ytimg.com/vi/1p0tWqeSf0s/hqdefault.jpg"
+              },
+              {
+                "title": "💥 பெங்களூரு Must visit Seafood Restaurant No 10 fort Cochin la Saptu irukingala ⁉️ #shorts",
+                "channel": "The D Square Vlogs",
+                "views": 894040,
+                "likes": 35353,
+                "publishedAt": "2025-07-04T07:09:54Z",
+                "description": "",
+                "thumbnailUrl": "https://i.ytimg.com/vi/3aZBLjEu0To/hqdefault.jpg"
+              },
+              {
+                "title": "കൊച്ചിയിൽ പിച്ചക്കാർക്ക് ഭക്ഷണം നൽകിയ വെയിറ്ററെ പുറത്താക്കി, മുതലാളിയുടെ വീട്ടിൽ നടന്നത്!",
+                "channel": "Feel Stories Malayalam ",
+                "views": 541887,
+                "likes": 4978,
+                "publishedAt": "2025-07-11T14:30:27Z",
+                "description": "Feel Stories is a Malayalam YouTube channel dedicated to bringing you imaginative, heart-touching stories inspired by daily life. Our stories are completely fictional, but each one is crafted to help you connect with your own experiences and emotions. If you love new ideas, emotions, and meaningful entertainment, subscribe to Feel Stories and enjoy a unique story every day. Join our community and let stories inspire and move you!",
+                "thumbnailUrl": "https://i.ytimg.com/vi/Mniq7dFM0RA/hqdefault.jpg"
+              }
+            ],
+            "trendAnalysis": "Food reviews and vlogs are highly popular in Kochi, particularly those featuring local establishments. Budget-friendly options and quick bites receive significant attention."
+          },
+          {
+            "platform": "Reddit",
+            "linkCount": 25,
+            "topPosts": [
+              {
+                "title": "Healthy food cafes for Kochi",
+                "url": "https://www.reddit.com/r/Kochi/comments/1m0nyb6/healthy_food_cafes_for_kochi/",
+                "subreddit": "Kochi",
+                "upvotes": 3,
+                "commentCount": 1
+              },
+              {
+                "title": "When did Kochi become so progressive?",
+                "url": "https://www.reddit.com/r/Kochi/comments/1m3ty7z/when_did_kochi_become_so_progressive/",
+                "subreddit": "Kochi",
+                "upvotes": 338,
+                "commentCount": 58
+              },
+              {
+                "title": "When did Kochi become so progressive?",
+                "url": "https://www.reddit.com/r/Coconaad/comments/1m3u0jv/when_did_kochi_become_so_progressive/",
+                "subreddit": "Coconaad",
+                "upvotes": 28,
+                "commentCount": 16
+              }
+            ],
+            "trendAnalysis": "Redditors in Kochi are actively seeking recommendations for food places and discussing food delivery options. The search for healthy and affordable options is a recurring theme."
+          }
+        ],
+        "keyInsightsAcrossPlatforms": [
+          "Demand for affordable and quality burger deals in Kochi.",
+          "Negative experiences with other brands emphasizes the need to promote freshness and quality.",
+          "Local food reviews and vlogs are popular, offering potential for influencer collaborations.",
+          "Reddit discussions highlight a desire for healthy and convenient food choices.",
+          "Target audience includes young adults, students, and working professionals active on social media."
+        ],
+        "aiGeneratedIdeas": {
+          "youtubeReelsIdeas": [
+            {
+              "title": "₹79 Burger Challenge!",
+              "concept": "Timelapse video of a person devouring the Burger Lounge Smasher Deal in under a minute, showcasing the deliciousness and affordability."
+            },
+            {
+              "title": "Burger Lounge BTS",
+              "concept": "Short behind-the-scenes look at the making of the Smasher Deal, highlighting the fresh ingredients and cooking process."
+            },
+            {
+              "title": "Kochi Reacts to Smasher Deal",
+              "concept": "Man on the street interviews asking people what they think of the Burger Lounge Smasher Deal."
+            }
+          ],
+          "youtubeVideoIdeas": [
+            {
+              "title": "Kochi's Best Kept Burger Secret?",
+              "description": "A review of the Burger Lounge Smasher Deal, comparing it to other burger options in Kochi and highlighting its unique value proposition. Include shots of the burger, fries, and the restaurant ambiance."
+            },
+            {
+              "title": "Budget Eats in Kochi: Smasher Deal Review",
+              "description": "Explore affordable food options in Kochi with a focus on the Burger Lounge Smasher Deal. Interview students and working professionals about their favorite budget-friendly meals."
+            },
+            {
+              "title": "Burger Lounge Smasher Deal Challenge!",
+              "description": "Invite local food bloggers to participate in a burger eating contest, with the winner receiving a Burger Lounge gift card. Showcase the excitement and appeal of the Smasher Deal."
+            }
+          ],
+          "adsIdeas": [
+            {
+              "title": "Smasher Deal Launch Ad",
+              "description": "A visually appealing ad showcasing the Smasher Deal with catchy music and text overlays highlighting the price and Kochi location. Target young adults and students on social media platforms."
+            },
+            {
+              "title": "Midweek Craving Rescue Ad",
+              "description": "Target individuals searching for burger and food deals on Google and social media. Highlight the convenience and affordability of the Smasher Deal as a quick and satisfying midweek meal option."
+            },
+            {
+              "title": "Burger Lounge App Promotion Ad",
+              "description": "Promote the Burger Lounge app with a special discount for first-time users. Emphasize the ease of ordering and delivery through the app. Target users in Kochi interested in online food delivery."
+            }
+          ],
+          "instagramReelsIdeas": [
+            {
+              "concept": "Quick transition showing the transformation from a mundane Wednesday to a delicious Smasher Deal.",
+              "caption": "Midweek blues got you down? 😫 Smash them away with our Smasher Deal! 🍔🍟 Only ₹79 at Burger Lounge Kochi! #BurgerLoungeKochi #SmasherDeal #KochiFood"
+            },
+            {
+              "concept": "Mouthwatering close-up shots of the Smasher Deal burger and fries, set to upbeat music.",
+              "caption": "Get your chicken burger + fries fix for just ₹79! 🔥 Burger Lounge Kochi's Smasher Deal is calling your name! 🤤 #KochiFoodDeals #BurgerDeals #KochiEats"
+            },
+            {
+              "concept": "A fun boomerang of someone biting into the Smasher Deal burger.",
+              "caption": "Bite into happiness this midweek! 😄 Burger Lounge Kochi's Smasher Deal is the perfect treat! Tag a friend who needs this! 👇 #MidweekTreat #BurgerLounge #Kochi"
+            }
+          ]
+        }
+      }
+    }
+  }
+]

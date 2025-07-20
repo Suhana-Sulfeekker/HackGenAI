@@ -1,0 +1,625 @@
+{
+  "name": "Demo: My first AI Agent in n8n",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first(); \n\nconst keywords = item.json.keywords || [];\n\nlet query = \"\";\n\nif (keywords.length === 1) {\n  query = keywords[0];\n} else if (keywords.length >= 2) {\n  query = `${keywords[0]} ${keywords[keywords.length - 1]}`;\n}\n\nreturn {\n  json: {\n    query\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        64,
+        864
+      ],
+      "id": "4e1f5612-fbcb-4e1e-94e6-8c74870038d0",
+      "name": "Generate Query"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst results = [];\n\nconst categoryMap = {\n  1: \"Film & Animation\",\n  2: \"Autos & Vehicles\",\n  10: \"Music\",\n  15: \"Pets & Animals\",\n  17: \"Sports\",\n  18: \"Short Movies\",\n  19: \"Travel & Events\",\n  20: \"Gaming\",\n  21: \"Videoblogging\",\n  22: \"People & Blogs\",\n  23: \"Comedy\",\n  24: \"Entertainment\",\n  25: \"News & Politics\",\n  26: \"Howto & Style\",\n  27: \"Education\",\n  28: \"Science & Technology\",\n  29: \"Nonprofits & Activism\",\n  30: \"Movies\",\n  31: \"Anime/Animation\",\n  32: \"Action/Adventure\",\n  33: \"Classics\",\n};\n\n// Helper: Convert ISO 8601 duration (e.g., PT53S) to seconds\nfunction parseISODuration(duration) {\n  const regex = /PT(?:(\\d+)H)?(?:(\\d+)M)?(?:(\\d+)S)?/;\n  const match = duration.match(regex);\n\n  if (!match) return 0;\n\n  const hours = parseInt(match[1] || '0');\n  const minutes = parseInt(match[2] || '0');\n  const seconds = parseInt(match[3] || '0');\n\n  return hours * 3600 + minutes * 60 + seconds;\n}\n\nfor (const item of items) {\n  const videoList = item.json.items;\n  if (!videoList || !Array.isArray(videoList)) continue;\n\n  for (const video of videoList) {\n    const snippet = video.snippet || {};\n    const statistics = video.statistics || {};\n    const contentDetails = video.contentDetails || {};\n\n    const durationSeconds = parseISODuration(contentDetails.duration || '');\n\n    const thumbnails = snippet.thumbnails || {};\n    const thumbnailUrl =\n      (thumbnails.high && thumbnails.high.url) ||\n      (thumbnails.medium && thumbnails.medium.url) ||\n      (thumbnails.default && thumbnails.default.url) ||\n      '';\n\n    results.push({\n      json: {\n        title: snippet.title ?? '',\n        channelTitle: snippet.channelTitle ?? '',\n        publishedAt: snippet.publishedAt ?? '',\n        description: snippet.description ?? '',\n        duration: durationSeconds + ' seconds',\n        viewCount: Number(statistics.viewCount ?? 0),\n        likeCount: Number(statistics.likeCount ?? 0),\n        commentCount: Number(statistics.commentCount ?? 0),\n        category: categoryMap[Number(snippet.categoryId)] ?? 'Unknown',\n        defaultAudioLanguage: snippet.defaultAudioLanguage ?? 'Unknown',\n        videoId: video.id ?? '',\n        url: `https://www.youtube.com/watch?v=${video.id}`,\n        thumbnailUrl: thumbnailUrl,\n      },\n    });\n  }\n}\n\nreturn results;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        864
+      ],
+      "id": "3fa9097e-1676-474d-bf08-0e63d18b5aeb",
+      "name": "Youtube response"
+    },
+    {
+      "parameters": {
+        "jsCode": "const keywords = $json.keywords || [];\nconst query = keywords.join(\" \");\n\nreturn {\n  json: {\n    query\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        144,
+        656
+      ],
+      "id": "04db1558-dcc1-4474-8bfe-378fe1febcab",
+      "name": "Build query"
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/customsearch/v1",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "AIzaSyAcLLCRPC9yB9nyb1nXTwGR99JdSG_AxWU"
+            },
+            {
+              "name": "cx",
+              "value": "33fbb1865636f4670"
+            },
+            {
+              "name": "q",
+              "value": "={{$json[\"query\"]}}"
+            },
+            {
+              "name": "num",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        352,
+        656
+      ],
+      "id": "fbddba22-8413-455f-bdb4-d8eabed867c1",
+      "name": "Google search"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.first().json.items || [];\n\nreturn items.map(item => ({\n  json: {\n    title: item.title,\n    url: item.link,\n    snippet: item.snippet\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        560,
+        656
+      ],
+      "id": "83cc8efb-ff48-4485-9fb0-63432079a793",
+      "name": "Extract Results"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyC9bhvSltQAJ2nVPL8cUebt_nZGuFxiOIA",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1952,
+        496
+      ],
+      "id": "3deb67f7-802c-4b8e-90d5-399652df5317",
+      "name": "Trend Analytics and Marketing Strategies"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rawText = $input.first().json.candidates[0].content.parts[0].text;\n\n// Remove Markdown formatting like ```json ... ```\nconst cleanText = rawText.replace(/```json|```/g, '').trim();\n\nlet parsed;\ntry {\n  parsed = JSON.parse(cleanText);\n} catch (err) {\n  parsed = {\n    status: \"error\",\n    message: \"Failed to parse JSON\",\n    error: err.message\n  };\n}\n\nreturn [\n  {\n    json: parsed\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2160,
+        496
+      ],
+      "id": "d5d50abd-eb61-4ed1-b319-7d0a74492c54",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "5ecce52b-de2c-4f82-96f6-1ee3652cb252",
+        "responseMode": "lastNode",
+        "responseData": "allEntries",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -720,
+        512
+      ],
+      "id": "9bb2be1a-8333-4c1e-94bc-ff6c2d9c3cf8",
+      "name": "Webhook1",
+      "webhookId": "5ecce52b-de2c-4f82-96f6-1ee3652cb252"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst videos = [];\n\nfor (const item of items) {\n  const videoList = item.json.items;\n\n  if (!videoList || !Array.isArray(videoList)) continue;\n\n  for (const video of videoList) {\n    const videoId = video?.id?.videoId;\n\n    videos.push({\n      json: {\n        url: `https://www.youtube.com/watch?v=${videoId}`,\n        title: video?.snippet?.title ?? '',\n        channelTitle: video?.snippet?.channelTitle ?? '',\n        thumbnail: video?.snippet?.thumbnails?.high?.url ?? '',\n        description:video?.snippet?.description??'',\n        videoId: videoId ?? '',\n      },\n    });\n  }\n}\n\nreturn videos;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        576,
+        864
+      ],
+      "id": "abf2b8b3-b5f2-45ad-9811-c23e260a03f3",
+      "name": "Generate Youtube Links1",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet"
+            },
+            {
+              "name": "q",
+              "value": "={{ $json[\"query\"] }}"
+            },
+            {
+              "name": "type",
+              "value": "video"
+            },
+            {
+              "name": "order",
+              "value": "viewCount"
+            },
+            {
+              "name": "publishedAfter",
+              "value": "={{ new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() }}"
+            },
+            {
+              "name": "maxResults",
+              "value": "15"
+            },
+            {
+              "name": "key",
+              "value": "AIzaSyBiPf4YXF2GmyGnnVdOGtqnv19zd0fIU3A"
+            },
+            {
+              "name": "regionCode",
+              "value": "IN"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        864
+      ],
+      "id": "a2df3f86-6705-488f-96d7-bf709b86da1d",
+      "name": "Search YouTube Videos1"
+    },
+    {
+      "parameters": {
+        "url": "https://www.googleapis.com/youtube/v3/videos",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "part",
+              "value": "snippet,statistics,contentDetails,status"
+            },
+            {
+              "name": "id",
+              "value": "={{ $json.videoId }}"
+            },
+            {
+              "name": "key",
+              "value": "AIzaSyBiPf4YXF2GmyGnnVdOGtqnv19zd0fIU3A"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        848,
+        864
+      ],
+      "id": "32878e21-bdd4-4ea6-8680-dcbbe9990e5a",
+      "name": "Get Video Details1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=AIzaSyC9bhvSltQAJ2nVPL8cUebt_nZGuFxiOIA",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\n  \"Content-Type\": \"application/json\"\n}\n",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "= {\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"You are a helpful assistant.\\n\\nYour task is to generate **exactly 4 relevant and simple one-word keywords** based on the input below.\\n\\nInputs:\\n- Category: {{ $json.category }}\\n- Organizer or Brand: {{ $json.brandOrOrganizer }}\\n- Product or Event: {{ $json.productOrEvent }}\\n- Content Type: {{ $json.contentType }}\\n- Description: {{ $json.description }}\\n- Suggested Keywords: {{ $json.keywords }}\\n- Location: {{ $json.location }}\\n\\nInstructions:\\n1. Return a valid JSON array with 4 keywords: [\\\"keyword1\\\", \\\"keyword2\\\", \\\"keyword3\\\", \\\"keyword4\\\"].\\n2. Each keyword must be **a single word** only.\\n3. Use only **generic, relevant words** – no brand names, product names, or proper nouns.\\n4. The **4th keyword must be the exact location** ({{ $json.location }}).\\n5. Do not repeat words across keywords.\\n6. Keywords should reflect the main idea clearly and simply.\"\n        }\n      ]\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -272,
+        592
+      ],
+      "id": "78c57c8f-d1a3-4501-a536-c2e1c309d12e",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst output = [];\n\nfor (const item of items) {\n  const input = item.json.body; \n\n  let brandOrOrganizer = \"\";\n  let productOrEvent = \"\";\n\n  if (input.category === \"brand\") {\n    brandOrOrganizer = input.brandName || \"\";\n    productOrEvent = input.productName || \"\";\n  } else if (input.category === \"event\") {\n    brandOrOrganizer = input.organizerName || \"\";\n    productOrEvent = input.eventName || \"\";\n  }\n\n  output.push({\n    json: {\n      category: input.category || \"\",\n      brandOrOrganizer,\n      productOrEvent,\n      contentType: input.contentType || \"\",\n      description: input.description || \"\",\n      keywords: (input.keywords || []).join(\", \"),\n      location: input.location || \"\",\n    },\n  });\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -464,
+        464
+      ],
+      "id": "7dbb701a-85b8-456d-a05d-5a7b1e809d9a",
+      "name": "preprocessing payload1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const item = $input.first();  \nconst rawText = item.json.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || \"\";\n\n\nconst jsonMatch = rawText.match(/\\[.*?\\]/s);\n\nlet keywords = [];\n\ntry {\n  if (jsonMatch) {\n    keywords = JSON.parse(jsonMatch[0]);\n  }\n} catch (e) {\n  keywords = [];\n}\n\nreturn {\n  json: {\n    keywords\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -48,
+        592
+      ],
+      "id": "cabcebe8-118d-4464-a41c-2e53a935afb4",
+      "name": "Fetching  keywords1"
+    },
+    {
+      "parameters": {
+        "numberInputs": 4
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1296,
+        480
+      ],
+      "id": "98975ec7-fbf6-4a78-8173-78c8b2913744",
+      "name": "Merge1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const youtube = [];\nconst googleSearchEngine = [];\nconst userInput = [];\nconst redditPosts = [];\n\nconst items = $input.all();\n\nfor (const item of items) {\n  const data = item.json;\n\n  if (data.category && data.brandOrOrganizer) {\n    userInput.push(data);\n  } else if (data.videoId && data.channelTitle) {\n    youtube.push({\n      title: data.title,\n      channel: data.channelTitle,\n      url: data.url,\n      publishedAt: data.publishedAt,\n      description: data.description,\n      duration: data.duration,\n      views: data.viewCount,\n      likes: data.likeCount,\n      category: data.category,\n      thumbnailUrl: data.thumbnailUrl,\n    });\n  } else if (data.title && data.url && data.snippet) {\n    googleSearchEngine.push({\n      title: data.title,\n      url: data.url,\n      snippet: data.snippet,\n    });\n  } else if (data.title && data.subreddit && data.selftext !== undefined) {\n    redditPosts.push({\n      id: data.id,\n      title: data.title,\n      selftext: data.selftext,\n      subreddit: data.subreddit,\n      score: data.score,\n      num_comments: data.num_comments,\n      upvote_ratio: data.upvote_ratio,\n      created_utc: data.created_utc,\n      author: data.author,\n    });\n  }\n}\n\nconst formattedData = {\n  userInput,\n  googleSearchData: googleSearchEngine.map(result => ({\n    title: result.title || '',\n    url: result.url || '',\n    snippet: result.snippet || ''\n  })),\n  youtubeData: youtube.map(video => ({\n    title: video.title || '',\n    channel: video.channel || '',\n    views: video.views || 0,\n    likes: video.likes || 0,\n    publishedAt: video.publishedAt || '',\n    description: video.description || '',\n    thumbnailUrl: video.thumbnailUrl || ''\n  })),\n  redditData: redditPosts\n};\n\nreturn [\n  {\n    json: {\n      formattedJson: JSON.stringify(formattedData, null, 2)\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1520,
+        496
+      ],
+      "id": "a3b4e327-76e3-446a-ae27-e9cd9116bc48",
+      "name": "data aggrgation1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// ===== FORMAT DATA FOR LLM =====\n// This node prepares the data and prompt for the LLM\n\nconst inputData = $input.first().json;\n\n// Parse the formatted JSON if it's a string\nlet parsedData;\ntry {\n  if (typeof inputData.formattedJson === 'string') {\n    parsedData = JSON.parse(inputData.formattedJson);\n  } else {\n    parsedData = inputData;\n  }\n} catch (e) {\n  parsedData = inputData;\n}\n\n// Build the complete prompt\nconst prompt = `You are a marketing strategist AI. Analyze the provided data and return ONLY a valid JSON response with marketing strategy.\n\nInput Data:\n${JSON.stringify(parsedData, null, 2)}\n\nAnalyze this data and provide a comprehensive marketing strategy in the exact JSON format below. Fill all fields with relevant data:\n\n{\n  \"status\": \"success\",\n  \"message\": \"Marketing strategy generated successfully\",\n  \"data\": {\n    \"researchData\": {\n      \"category\": \"Extract from userInput[0].category\",\n      \"brandOrOrganizer\": \"Extract from userInput[0].brandOrOrganizer\",\n      \"productOrEvent\": \"Extract from userInput[0].productOrEvent\",\n      \"contentType\": \"Extract from userInput[0].contentType\",\n      \"description\": \"Extract from userInput[0].description\",\n      \"keywords\": \"Convert userInput[0].keywords string to array\",\n      \"location\": \"Extract from userInput[0].location\"\n    },\n    \"results\": {\n      \"viralScore\": \"Rate 0-100 based on trend analysis\",\n      \"targetAudience\": {\n        \"ageGroup\": \"Analyze and suggest target age group\",\n        \"audienceCategory\": \"Define audience category\",\n        \"demographics\": \"Detailed demographic analysis\"\n      },\n      \"trendingHashtags\": \"Generate 8-12 relevant hashtags as array\",\n      \"contentStrategy\": [\n        {\n          \"platform\": \"Google Search Engine\",\n          \"linkCount\": \"Count of googleSearchData items\",\n          \"topResults\": \"Map top 3 googleSearchData items to {title, url, description: snippet}\",\n          \"trendAnalysis\": \"Analyze Google search trends\"\n        },\n        {\n          \"platform\": \"YouTube\",\n          \"linkCount\": \"Count of youtubeData items\",\n          \"topVideos\": \"Map top 3 youtubeData items to required format\",\n          \"trendAnalysis\": \"Analyze YouTube video trends\"\n        },\n        {\n          \"platform\": \"Reddit\",\n          \"linkCount\": \"Count of redditData items\",\n          \"topPosts\": \"Map top 3 redditData items to {title, url, subreddit, upvotes, commentCount}\",\n          \"trendAnalysis\": \"Analyze Reddit discussion trends\"\n        }\n      ],\n      \"keyInsightsAcrossPlatforms\": \"Generate 4-6 key insights as array\",\n      \"aiGeneratedIdeas\": {\n        \"youtubeReelsIdeas\": \"Generate 3 YouTube Reels ideas with title and concept\",\n        \"youtubeVideoIdeas\": \"Generate 3 YouTube video ideas with title and description\",\n        \"adsIdeas\": \"Generate 3 ad campaign ideas with title and description\",\n        \"instagramReelsIdeas\": \"Generate 3 Instagram Reel ideas with concept and caption\"\n      }\n    }\n  }\n}\n\nReturn ONLY the JSON response, no additional text.`;\n\n// Return the properly formatted request body\nreturn {\n  contents: [\n    {\n      role: \"user\",\n      parts: [\n        {\n          text: prompt\n        }\n      ]\n    }\n  ]\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1728,
+        496
+      ],
+      "id": "8abdf31a-c376-4f9b-84c8-ffe0b4c76d6d",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const inputData = $input.all();\n\nfunction extractRedditData(redditResponse) {\n  const extractedPosts = [];\n\n  if (redditResponse.kind === \"Listing\" && redditResponse.data && redditResponse.data.children) {\n    redditResponse.data.children.forEach(child => {\n      if (child.kind === \"t3\" && child.data) {\n        const post = child.data;\n\n        extractedPosts.push({\n          id: post.id,\n          title: post.title,\n          selftext: post.selftext,\n          subreddit: post.subreddit,\n          score: post.score,\n          num_comments: post.num_comments,\n          upvote_ratio: post.upvote_ratio,\n          created_utc: post.created_utc,\n          author: post.author\n        });\n      }\n    });\n  }\n\n  return extractedPosts;\n}\n\nconst results = [];\n\ninputData.forEach(item => {\n  const data = item.json;\n\n  if (Array.isArray(data)) {\n    data.forEach(redditResponse => {\n      results.push(...extractRedditData(redditResponse));\n    });\n  } else {\n    results.push(...extractRedditData(data));\n  }\n});\n\nreturn results.map(post => ({ json: post }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        928,
+        288
+      ],
+      "id": "094abe66-9218-41a7-9a29-d5bac6f7f901",
+      "name": "Code4"
+    },
+    {
+      "parameters": {
+        "method": "=GET",
+        "url": "={{ $json.reddit_urls.combined_search }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendHeaders": true,
+        "specifyHeaders": "json",
+        "jsonHeaders": "{\"User-Agent\": \"n8n\"}\n",
+        "options": {
+          "allowUnauthorizedCerts": true
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        592,
+        304
+      ],
+      "id": "bd30d15f-17ac-4892-a606-c6a2a03eed2f",
+      "name": "Reddit fetch1",
+      "retryOnFail": true,
+      "credentials": {
+        "oAuth2Api": {
+          "id": "ay0r9rKNDLDfCrfv",
+          "name": "Unnamed credential 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// ===== KEYWORD-BASED REDDIT SEARCH =====\n// Uses keywords array with location\n\nconst keywords = $input.first().json.keywords || [];\nconst location = keywords[keywords.length - 1]; // Last item is location\nconst searchKeywords = keywords.slice(0, -1); // All except location\n\n// Build search query\nconst searchQuery = searchKeywords.join(\"+OR+\"); // \"startup+growth+OR+tech+innovation+OR+india+entrepreneurship\"\nconst locationQuery = `+${location}`; // \"+Hyderabad\"\n\n// Multiple Reddit searches for comprehensive data\nconst urls = {\n  // Search with all keywords\n  combined_search: `https://oauth.reddit.com/search.json?q=${searchQuery}${locationQuery}&sort=hot&limit=25`,\n  \n  // Search without location (broader reach)\n  general_search: `https://oauth.reddit.com/search.json?q=${searchQuery}&sort=top&t=week&limit=25`,\n  \n  // Location-specific subreddits\n  local_search: `https://oauth.reddit.com/r/${location.toLowerCase()}/search.json?q=${searchKeywords[0]}&restrict_sr=on&limit=10`,\n  \n  // Trending in relevant subreddits\n  subreddit_trending: `https://oauth.reddit.com/r/startup+entrepreneur+india/hot.json?limit=20`\n};\n\nreturn {\n  keywords: keywords,\n  location: location,\n  search_terms: searchKeywords,\n  reddit_urls: urls,\n  search_context: {\n    focus: \"Finding viral patterns for these topics\",\n    location_specific: `Especially in ${location}`,\n    looking_for: \"What content about these topics gets engagement\"\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        144,
+        384
+      ],
+      "id": "446df7d2-3c86-4cc4-8c21-bf1517f49475",
+      "name": "setup reddit1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Generate Query": {
+      "main": [
+        [
+          {
+            "node": "Search YouTube Videos1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Youtube response": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 3
+          }
+        ]
+      ]
+    },
+    "Build query": {
+      "main": [
+        [
+          {
+            "node": "Google search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google search": {
+      "main": [
+        [
+          {
+            "node": "Extract Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Results": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Trend Analytics and Marketing Strategies": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "preprocessing payload1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Youtube Links1": {
+      "main": [
+        [
+          {
+            "node": "Get Video Details1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search YouTube Videos1": {
+      "main": [
+        [
+          {
+            "node": "Generate Youtube Links1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Video Details1": {
+      "main": [
+        [
+          {
+            "node": "Youtube response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Fetching  keywords1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "preprocessing payload1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetching  keywords1": {
+      "main": [
+        [
+          {
+            "node": "Generate Query",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Build query",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "setup reddit1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge1": {
+      "main": [
+        [
+          {
+            "node": "data aggrgation1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "data aggrgation1": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Trend Analytics and Marketing Strategies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reddit fetch1": {
+      "main": [
+        [
+          {
+            "node": "Code4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "setup reddit1": {
+      "main": [
+        [
+          {
+            "node": "Reddit fetch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code4": {
+      "main": [
+        [
+          {
+            "node": "Merge1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0d0049ac-b7ae-41b7-8434-f1767ade6a99",
+  "meta": {
+    "templateId": "self-building-ai-agent",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1c630c9fee218a98721bf7acc70e82e60e95a5fd2d54773c036b830120f88d17"
+  },
+  "id": "mTrUohLWFeAqaoYn",
+  "tags": []
+}
