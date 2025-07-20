@@ -1,34 +1,44 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Header } from "./header"
-import { HeroSection } from "./hero-section"
-import { ResearchForm } from "./research-form"
-import { LoadingScreen } from "./loading-screen"
-import { ResultsPage } from "./results-page"
+import { useState } from "react";
+import { Header } from "./header";
+import { HeroSection } from "./hero-section";
+import { HowItWorks } from "./how-it-works";
+
+import { ResearchForm } from "./research-form";
+import { LoadingScreen } from "./loading-screen";
+import { ResultsPage } from "./results-page";
+import { AboutUs } from "@/app/about-us/page";
 
 export function LandingPage() {
-  const [currentStep, setCurrentStep] = useState<"hero" | "form" | "loading" | "results">("hero")
-  const [researchData, setResearchData] = useState<any>(null)
+  const [currentStep, setCurrentStep] = useState<
+    "hero" | "how-it-works" | "about" | "form" | "loading" | "results"
+  >("hero");
+  const [researchData, setResearchData] = useState<any>(null);
 
   const handleStartResearch = () => {
-    setCurrentStep("form")
-  }
+    setCurrentStep("form");
+  };
 
   const handleFormSubmit = (data: any) => {
-    setResearchData(data)
-    setCurrentStep("loading")
-
+    setResearchData(data);
+    setCurrentStep("loading");
     // Simulate processing time
     setTimeout(() => {
-      setCurrentStep("results")
-    }, 8000)
-  }
+      setCurrentStep("results");
+    }, 8000);
+  };
 
   const handleBackToStart = () => {
-    setCurrentStep("hero")
-    setResearchData(null)
-  }
+    setCurrentStep("hero");
+    setResearchData(null);
+  };
+
+  const handleNavigation = (page: string) => {
+    setCurrentStep(page as any);
+  };
+
+  const isResearchFlow = ["form", "loading", "results"].includes(currentStep);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0A0E27] via-[#151B3B] to-[#0A0E27]">
@@ -40,14 +50,31 @@ export function LandingPage() {
         <div className="absolute top-1/2 left-3/4 w-1.5 h-1.5 bg-[#8B5CF6] rounded-full animate-pulse opacity-50" />
       </div>
 
-      <Header onBackToStart={handleBackToStart} showBackButton={currentStep !== "hero"} />
+      <Header
+        onBackToStart={handleBackToStart}
+        showBackButton={isResearchFlow}
+        currentPage={currentStep}
+        onNavigate={handleNavigation}
+      />
 
       <main className="relative z-10">
-        {currentStep === "hero" && <HeroSection onStartResearch={handleStartResearch} />}
+        {currentStep === "hero" && (
+          <HeroSection onStartResearch={handleStartResearch} />
+        )}
+        {currentStep === "how-it-works" && (
+          <HowItWorks onStartResearch={handleStartResearch} />
+        )}
+        {currentStep === "about" && (
+          <AboutUs onStartResearch={handleStartResearch} />
+        )}
         {currentStep === "form" && <ResearchForm onSubmit={handleFormSubmit} />}
-        {currentStep === "loading" && <LoadingScreen researchData={researchData} />}
-        {currentStep === "results" && <ResultsPage researchData={researchData} />}
+        {currentStep === "loading" && (
+          <LoadingScreen researchData={researchData} />
+        )}
+        {currentStep === "results" && (
+          <ResultsPage researchData={researchData} />
+        )}
       </main>
     </div>
-  )
+  );
 }
