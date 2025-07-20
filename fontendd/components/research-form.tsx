@@ -20,6 +20,7 @@ import { LoadingScreen } from "./loading-screen";
 import { ResultsPage } from "./results-page";
 import axios from "axios";
 import BGimage from "../public/assets/aiImage.jpg";
+import { useRouter } from "next/router";
 
 type Category = "brand" | "event";
 type ViewState = "form" | "loading" | "results";
@@ -115,6 +116,7 @@ export function ResearchForm() {
 
   const handleNewResearch = () => {
     setCurrentView("form");
+
     setApiResults(null);
     setFormData({
       brandName: "",

@@ -22,7 +22,6 @@ import {
   Lightbulb,
   ExternalLink,
   ThumbsUp,
-  Calendar,
 } from "lucide-react";
 
 interface ResultsPageProps {
@@ -36,9 +35,11 @@ export function ResultsPage({
   apiResults,
   onNewResearch,
 }: ResultsPageProps) {
-  // Extract data from API response or use fallback
+  // Extract data from API response structure
   const apiData = apiResults?.data?.results;
   const researchInfo = apiResults?.data?.researchData;
+  const status = apiResults?.status;
+  const message = apiResults?.message;
 
   // Fallback mock data for when API data is empty
   const mockResults = {
@@ -73,12 +74,9 @@ export function ResultsPage({
         topVideos: [
           {
             title: "Sample Video Title",
+            channel: "Sample Channel",
+            views: 50000,
             thumbnailUrl: "",
-            channelUrl: "https://youtube.com/channel/sample",
-            publishedAt: "2024-01-15",
-            viewCount: 50000,
-            likeCount: 1200,
-            description: "Sample video description",
           },
         ],
         trendAnalysis: "Growing interest in video content",
@@ -93,7 +91,7 @@ export function ResultsPage({
       youtubeReelsIdeas: [
         {
           title: "Quick Product Demo",
-          idea: "Show your product in action within 30 seconds",
+          concept: "Show your product in action within 30 seconds",
         },
       ],
       youtubeVideoIdeas: [
@@ -110,7 +108,7 @@ export function ResultsPage({
       ],
       instagramReelsIdeas: [
         {
-          reelIdea: "Behind-the-scenes content",
+          concept: "Behind-the-scenes content",
           caption: "See how we create amazing products! #BehindTheScenes",
         },
       ],
@@ -130,6 +128,8 @@ export function ResultsPage({
         return Youtube;
       case "instagram":
         return Instagram;
+      case "reddit":
+        return MessageSquare;
       default:
         return MessageSquare;
     }
@@ -144,6 +144,8 @@ export function ResultsPage({
         return "from-[#FF0000] to-[#CC0000]";
       case "instagram":
         return "from-[#E4405F] to-[#833AB4]";
+      case "reddit":
+        return "from-[#FF4500] to-[#FF6500]";
       default:
         return "from-[#8B5CF6] to-[#EC4899]";
     }
@@ -167,16 +169,33 @@ export function ResultsPage({
             </div>
             <div>
               <h1 className="text-2xl font-bold text-white">
-                Marketing Strategy Generated
+                {message || "Marketing Strategy Generated"}
               </h1>
               <p className="text-gray-400">
-                For {researchInfo?.brandOrOrganizer || researchData.brandName}{" "}
-                {researchInfo?.productOrEvent || researchData.productName}
+                For{" "}
+                {researchInfo?.brandOrOrganizer ||
+                  researchData?.brandName ||
+                  "Brand"}{" "}
+                -{" "}
+                {researchInfo?.productOrEvent ||
+                  researchData?.productName ||
+                  "Product"}
               </p>
+              {status && (
+                <Badge
+                  className={`mt-1 ${
+                    status === "success"
+                      ? "bg-green-500/20 text-green-400 border-green-500/30"
+                      : "bg-red-500/20 text-red-400 border-red-500/30"
+                  }`}
+                >
+                  {status}
+                </Badge>
+              )}
             </div>
           </div>
           <div className="flex space-x-3">
-            <Button className="bg-gradient-to-r from-[#00D4FF] to-[#8B5CF6] hover:from-[#00B8E6] hover:to-[#7C3AED] text-white">
+            {/* <Button className="bg-gradient-to-r from-[#00D4FF] to-[#8B5CF6] hover:from-[#00B8E6] hover:to-[#7C3AED] text-white">
               <Download className="w-4 h-4 mr-2" />
               Download Report
             </Button>
@@ -186,7 +205,7 @@ export function ResultsPage({
             >
               <Share className="w-4 h-4 mr-2" />
               Share Results
-            </Button>
+            </Button> */}
             <Button
               onClick={onNewResearch}
               variant="outline"
@@ -308,7 +327,7 @@ export function ResultsPage({
                           </p>
                         )}
 
-                        {/* Platform-specific content */}
+                        {/* YouTube Videos */}
                         {platform.platform === "YouTube" &&
                           platform.topVideos?.length > 0 && (
                             <div className="space-y-2">
@@ -329,25 +348,14 @@ export function ResultsPage({
                                       </p>
                                     </div>
                                     <div className="flex items-center space-x-4 text-xs text-gray-400">
-                                      <span className="flex items-center space-x-1">
-                                        <Eye className="w-3 h-3" />
-                                        <span>
-                                          {formatNumber(video.viewCount || 0)}
-                                        </span>
-                                      </span>
-                                      <span className="flex items-center space-x-1">
-                                        <ThumbsUp className="w-3 h-3" />
-                                        <span>
-                                          {formatNumber(video.likeCount || 0)}
-                                        </span>
-                                      </span>
-                                      {video.publishedAt && (
+                                      {video.channel && (
+                                        <span>by {video.channel}</span>
+                                      )}
+                                      {video.views && (
                                         <span className="flex items-center space-x-1">
-                                          <Calendar className="w-3 h-3" />
+                                          <Eye className="w-3 h-3" />
                                           <span>
-                                            {new Date(
-                                              video.publishedAt
-                                            ).toLocaleDateString()}
+                                            {formatNumber(video.views)}
                                           </span>
                                         </span>
                                       )}
@@ -357,6 +365,7 @@ export function ResultsPage({
                             </div>
                           )}
 
+                        {/* Google Search Results */}
                         {platform.platform === "Google Search Engine" &&
                           platform.topResults?.length > 0 && (
                             <div className="space-y-2">
@@ -383,6 +392,39 @@ export function ResultsPage({
                                 ))}
                             </div>
                           )}
+
+                        {/* Reddit Posts */}
+                        {platform.platform === "Reddit" &&
+                          platform.topPosts?.length > 0 && (
+                            <div className="space-y-2">
+                              <h5 className="text-xs font-medium text-white mb-2">
+                                Top Posts
+                              </h5>
+                              {platform.topPosts
+                                .slice(0, 2)
+                                .map((post: any, postIndex: number) => (
+                                  <div
+                                    key={postIndex}
+                                    className="bg-[#0A0E27]/50 rounded p-2"
+                                  >
+                                    <div className="flex items-center space-x-2 mb-1">
+                                      <MessageSquare className="w-3 h-3 text-orange-400" />
+                                      <p className="text-xs text-white font-medium truncate">
+                                        {post.title}
+                                      </p>
+                                    </div>
+                                    <div className="flex items-center space-x-4 text-xs text-gray-400">
+                                      <span>r/{post.subreddit}</span>
+                                      <span className="flex items-center space-x-1">
+                                        <ThumbsUp className="w-3 h-3" />
+                                        <span>{post.upvotes}</span>
+                                      </span>
+                                      <span>{post.commentCount} comments</span>
+                                    </div>
+                                  </div>
+                                ))}
+                            </div>
+                          )}
                       </Card>
                     );
                   }
@@ -398,7 +440,6 @@ export function ResultsPage({
                   AI Generated Ideas
                 </h3>
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* YouTube Video Ideas */}
                 {results.aiGeneratedIdeas?.youtubeVideoIdeas?.length > 0 && (
@@ -446,7 +487,9 @@ export function ResultsPage({
                           <h5 className="text-sm font-medium text-white mb-1">
                             {idea.title}
                           </h5>
-                          <p className="text-xs text-gray-300">{idea.idea}</p>
+                          <p className="text-xs text-gray-300">
+                            {idea.concept}
+                          </p>
                         </div>
                       ))}
                   </div>
@@ -469,7 +512,7 @@ export function ResultsPage({
                           className="bg-gradient-to-r from-[#151B3B] to-[#1A2040] rounded-lg p-3"
                         >
                           <p className="text-sm text-white mb-1">
-                            {idea.reelIdea}
+                            {idea.concept}
                           </p>
                           <p className="text-xs text-gray-300">
                             {idea.caption}
@@ -614,31 +657,39 @@ export function ResultsPage({
                 <div className="flex justify-between">
                   <span className="text-gray-400">Category:</span>
                   <span className="text-white">
-                    {researchInfo?.category || researchData.category || "N/A"}
+                    {researchInfo?.category || researchData?.category || "N/A"}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Location:</span>
                   <span className="text-white">
-                    {researchInfo?.location || researchData.location || "N/A"}
+                    {researchInfo?.location || researchData?.location || "N/A"}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Content Type:</span>
                   <span className="text-white">
                     {researchInfo?.contentType ||
-                      researchData.contentType ||
+                      researchData?.contentType ||
                       "N/A"}
                   </span>
                 </div>
+                {researchInfo?.description && (
+                  <div>
+                    <span className="text-gray-400">Description:</span>
+                    <p className="text-white text-xs mt-1">
+                      {researchInfo.description}
+                    </p>
+                  </div>
+                )}
                 {(researchInfo?.keywords?.length > 0 ||
-                  researchData.keywords?.length > 0) && (
+                  researchData?.keywords?.length > 0) && (
                   <div>
                     <span className="text-gray-400">Keywords:</span>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {(
                         researchInfo?.keywords ||
-                        researchData.keywords ||
+                        researchData?.keywords ||
                         []
                       ).map((keyword: string, index: number) => (
                         <Badge
