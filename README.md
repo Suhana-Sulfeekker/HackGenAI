@@ -72,7 +72,7 @@ All of this is processed through a **custom-built n8n workflow** and AI prompt s
 - **n8n** for no-code/low-code automation  
 - **Google Custom Search API**  
 - **YouTube Data API**  
-- **Google Gemini API
+- **Google Gemini API**
 ---
 
 ### Screenshots
