@@ -1,17 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Zap, Globe, Search, Brain, TrendingUp, Target } from "lucide-react";
 
 interface LoadingScreenProps {
   researchData: any;
+
 }
 
 export function LoadingScreen({ researchData }: LoadingScreenProps) {
-  const router = useRouter();
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -55,36 +54,11 @@ export function LoadingScreen({ researchData }: LoadingScreenProps) {
         const newStep = Math.floor(newProgress / 20);
         setCurrentStep(Math.min(newStep, steps.length - 1));
 
-        // When progress reaches 100%, navigate to results
+        // When progress reaches 100%, call onComplete
         if (newProgress >= 100) {
           clearInterval(timer);
-
-          // Create URL parameters from research data
-          const params = new URLSearchParams();
-          params.set("category", researchData.category);
-          params.set("brandName", researchData.brandName);
-          params.set("productName", researchData.productName);
-          params.set("contentType", researchData.contentType);
-          params.set("location", researchData.location);
-          params.set("keywords", researchData.keywords.join(","));
-          params.set("description", researchData.description);
-
-          // Add category-specific fields
-          if (researchData.category === "film") {
-            params.set("releaseDate", researchData.releaseDate);
-            params.set("director", researchData.director);
-          } else if (researchData.category === "event") {
-            if (researchData.eventDate) {
-              params.set("eventDate", researchData.eventDate.toISOString());
-            }
-            if (researchData.venue) {
-              params.set("venue", researchData.venue);
-            }
-          }
-
-          // Navigate to results page with parameters
           setTimeout(() => {
-            router.push(`/results?${params.toString()}`);
+  
           }, 500); // Small delay for better UX
         }
 
@@ -93,7 +67,7 @@ export function LoadingScreen({ researchData }: LoadingScreenProps) {
     }, 160);
 
     return () => clearInterval(timer);
-  }, [router, researchData]);
+  }, [researchData]);
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-[#0A0E27] via-[#151B3B] to-[#0A0E27] flex items-center justify-center p-6">

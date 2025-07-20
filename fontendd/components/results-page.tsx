@@ -12,8 +12,6 @@ import {
   Video,
   Search,
   Youtube,
-  Download,
-  Share,
   BarChart3,
   Zap,
   Eye,
@@ -35,89 +33,34 @@ export function ResultsPage({
   apiResults,
   onNewResearch,
 }: ResultsPageProps) {
-  // Extract data from API response structure
-  const apiData = apiResults?.data?.results;
-  const researchInfo = apiResults?.data?.researchData;
-  const status = apiResults?.status;
-  const message = apiResults?.message;
+  // Handle both array and object formats for apiResults
+  const apiData = Array.isArray(apiResults) ? apiResults[0] : apiResults;
+  const results = apiData?.data?.results;
+  const researchInfo = apiData?.data?.researchData;
+  const status = apiData?.status;
+  const message = apiData?.message;
 
-  // Fallback mock data for when API data is empty
-  const mockResults = {
-    viralScore: 75,
-    targetAudience: {
-      ageGroup: "25-35 years",
-      audienceCategory: "Tech-savvy millennials",
-      demographics: "Urban professionals, 60% male, 40% female",
-    },
-    trendingHashtags: [
-      "#TechInnovation",
-      "#FutureIsNow",
-      "#SmartTech",
-      "#Innovation2024",
-    ],
-    contentStrategy: [
-      {
-        platform: "Google Search Engine",
-        linkCount: 15,
-        topResults: [
-          {
-            title: "Sample Search Result",
-            url: "https://example.com",
-            description: "Sample description for search result",
-          },
-        ],
-        trendAnalysis: "High search volume for related keywords",
-      },
-      {
-        platform: "YouTube",
-        linkCount: 8,
-        topVideos: [
-          {
-            title: "Sample Video Title",
-            channel: "Sample Channel",
-            views: 50000,
-            thumbnailUrl: "",
-          },
-        ],
-        trendAnalysis: "Growing interest in video content",
-      },
-    ],
-    keyInsightsAcrossPlatforms: [
-      "Video content shows 340% better engagement",
-      "Search volume increasing by 25% monthly",
-      "User-generated content drives 67% more engagement",
-    ],
-    aiGeneratedIdeas: {
-      youtubeReelsIdeas: [
-        {
-          title: "Quick Product Demo",
-          concept: "Show your product in action within 30 seconds",
-        },
-      ],
-      youtubeVideoIdeas: [
-        {
-          title: "Complete Product Tutorial",
-          description: "In-depth guide showing all features and benefits",
-        },
-      ],
-      adsIdeas: [
-        {
-          title: "Problem-Solution Ad",
-          description: "Highlight the problem your product solves",
-        },
-      ],
-      instagramReelsIdeas: [
-        {
-          concept: "Behind-the-scenes content",
-          caption: "See how we create amazing products! #BehindTheScenes",
-        },
-      ],
-    },
-  };
-
-  // Use API data if available, otherwise use mock data
-  const results =
-    apiData && Object.keys(apiData).length > 0 ? apiData : mockResults;
+  // If no results data, show loading or error state
+  if (!results) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#0A0E27] via-[#1A1B3A] to-[#2D1B69] p-4 flex items-center justify-center">
+        <Card className="bg-[#1A2040]/60 backdrop-blur-xl border-white/10 p-8 text-center">
+          <h2 className="text-xl font-semibold text-white mb-4">
+            No Results Available
+          </h2>
+          <p className="text-gray-400 mb-6">
+            Unable to load marketing strategy data.
+          </p>
+          <Button
+            onClick={onNewResearch}
+            className="bg-gradient-to-r from-[#39FF14] to-[#00D4FF] text-black hover:opacity-90"
+          >
+            Start New Research
+          </Button>
+        </Card>
+      </div>
+    );
+  }
 
   // Helper function to get platform icon
   const getPlatformIcon = (platform: string) => {
@@ -195,17 +138,6 @@ export function ResultsPage({
             </div>
           </div>
           <div className="flex space-x-3">
-            {/* <Button className="bg-gradient-to-r from-[#00D4FF] to-[#8B5CF6] hover:from-[#00B8E6] hover:to-[#7C3AED] text-white">
-              <Download className="w-4 h-4 mr-2" />
-              Download Report
-            </Button>
-            <Button
-              variant="outline"
-              className="border-white/20 text-white hover:bg-white/10 bg-transparent"
-            >
-              <Share className="w-4 h-4 mr-2" />
-              Share Results
-            </Button> */}
             <Button
               onClick={onNewResearch}
               variant="outline"
@@ -256,7 +188,7 @@ export function ResultsPage({
           <Card className="bg-[#1A2040]/60 backdrop-blur-xl border-white/10 p-6">
             <div className="flex items-center space-x-2 mb-2">
               <Eye className="w-5 h-5 text-[#00D4FF]" />
-              <h3 className="text-sm font-semibold text-white">Total Links</h3>
+              <h3 className="text-sm font-semibold text-white">Top Links</h3>
             </div>
             <div className="text-2xl font-bold text-white">
               {results.contentStrategy?.reduce(
@@ -356,6 +288,14 @@ export function ResultsPage({
                                           <Eye className="w-3 h-3" />
                                           <span>
                                             {formatNumber(video.views)}
+                                          </span>
+                                        </span>
+                                      )}
+                                      {video.likes && (
+                                        <span className="flex items-center space-x-1">
+                                          <ThumbsUp className="w-3 h-3" />
+                                          <span>
+                                            {formatNumber(video.likes)}
                                           </span>
                                         </span>
                                       )}

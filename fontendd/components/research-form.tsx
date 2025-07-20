@@ -95,23 +95,28 @@ export function ResearchForm() {
           }
         : {}),
     };
-    setCurrentView("loading");
     try {
+      setCurrentView("loading");
       const response = await axios.post(
         "https://fosslab123.app.n8n.cloud/webhook-test/5ecce52b-de2c-4f82-96f6-1ee3652cb252",
         dataToSend
       );
-      console.log("API Response:", response.data);
-      setApiResults(response.data);
+      if (response.status === 200) {
+        console.log("API Response:", response.data);
+        setApiResults(response.data);
+        setCurrentView("results");
+      } else {
+        console.error("API Error: Unexpected status code", response.status);
+        alert(
+          "Failed to generate marketing strategy. Unexpected response. Please try again."
+        );
+        setCurrentView("form");
+      }
     } catch (error) {
       console.error("API Error:", error);
       alert("Failed to generate marketing strategy. Please try again.");
       setCurrentView("form");
     }
-  };
-
-  const handleLoadingComplete = () => {
-    setCurrentView("results");
   };
 
   const handleNewResearch = () => {
@@ -144,12 +149,7 @@ export function ResearchForm() {
   };
 
   if (currentView === "loading") {
-    return (
-      <LoadingScreen
-        researchData={dataToSend}
-        onComplete={handleLoadingComplete}
-      />
-    );
+    return <LoadingScreen researchData={dataToSend} />;
   }
 
   if (currentView === "results") {
