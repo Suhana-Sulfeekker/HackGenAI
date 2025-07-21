@@ -69,12 +69,13 @@ All of this is processed through a **custom-built n8n workflow** and AI prompt s
 - Styling: **Tailwind CSS**
 
 ### Backend  
-- **n8n** for no-code/low-code automation  
+- **n8n**  
 - **Google Custom Search API**  
 - **YouTube Data API**  
 - **Google Gemini API**
 ---
 
 ### Screenshots
+<img width="1363" height="594" alt="viral iq frontend" src="https://github.com/user-attachments/assets/f44b7b96-e20c-4fca-aeec-7566cec1a5ca" />
+<img width="1365" height="606" alt="n8n forkflow image" src="https://github.com/user-attachments/assets/af6b1c76-f5e8-4672-9bb4-0b9a0187ba05" />
 
-### Demo Video Link
